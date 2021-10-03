@@ -1,18 +1,20 @@
 const express = require('express');
-const fs = require("fs");
 const router = express.Router();
+const fileDB = require('../fs/fsWrite')
+
+const names = [];
 
 router.get('/', (req, res) => {
+  const lastNames = names.slice(-5);
+  fileDB.read(lastNames, res)
   res.send('List of products will be here');
 });
 
-router.get('/:id', (req, res) => {
-  res.send('A single product by id will be here');
-});
-
 router.post('/', (req, res) => {
-  console.log(req.body)
-  res.send('Will create new product here');
+  const currentDate = Date();
+  names.push({currentDate})
+  fileDB.save({...req.body}, currentDate);
+  res.send(JSON.stringify(req.body) + ' ' + currentDate);
 });
 
 module.exports = router;
