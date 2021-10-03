@@ -2,19 +2,19 @@ const express = require('express');
 const router = express.Router();
 const fileDB = require('../fs/fsWrite')
 
-const names = [];
-
 router.get('/', (req, res) => {
-  const lastNames = names.slice(-5);
-  fileDB.read(lastNames, res)
-  res.send('List of products will be here');
+  const messages = fileDB.read('./messages');
+  res.setHeader('content-type', 'application/JSON');
+  console.log(messages)
+  res.send(JSON.stringify(messages));
 });
 
 router.post('/', (req, res) => {
-  const currentDate = Date();
-  names.push({currentDate})
-  fileDB.save({...req.body}, currentDate);
-  res.send(JSON.stringify(req.body) + ' ' + currentDate);
+  const currentDate = new Date().toISOString();
+  const body = {...req.body, datetime: currentDate}
+  fileDB.save(body, currentDate);
+  res.setHeader('content-type', 'application/JSON');
+  res.send(JSON.stringify(body));
 });
 
 module.exports = router;
